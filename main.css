@@ -1,0 +1,30 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin-top: 50px;
+}
+h1 {
+  font-size: 2.5em;
+}
+button {
+  background-color: rgb(147, 66, 159);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  margin-top: 20px;
+}
+button:hover {
+  background-color: rgb(82, 12, 82);
+}
+.quote {
+  margin-top: 30px;
+  font-size: 1.5em;
+  font-style: italic;
+}
+.author {
+  margin-top: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
