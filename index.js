@@ -1,25 +1,96 @@
+const form = document.getElementById('bookmarkForm');
+const bookmarkList = document.getElementById('bookmarkList');
 
-var quotes = [
-    { text: "You miss 100% of the shots you don't take.", author: "Wayne Gretzky" },
-    { text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt" },
-    { text: "Do what you can, with what you have, where you are.", author: "Theodore Roosevelt" },
-    { text: "Success is not final, failure is not fatal: It is the courage to continue that counts.", author: "Winston Churchill" },
-    { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" }
-  ];
-  
-  
-  var quoteText = document.querySelector(".quote");
-  var quoteAuthor = document.querySelector(".author");
-  var newQuoteButton = document.getElementById("new-quote");
-  
 
-  newQuoteButton.onclick = function () {
+function showPopup() {
+  
+  const popup = document.createElement('div');
+  popup.className = 'popup'; 
+
+
+  popup.innerHTML = `
+    <div class="popup-header">
+      <span>Site Name or Url is not valid</span>
+      <button onclick="this.parentElement.parentElement.remove()">&times;</button>
+    </div>
+    <div class="popup-body">
+      <p>Please follow the rules below:</p>
+      <ul>
+        <li>Site name must contain at least 3 characters</li>
+        <li>Site URL must be a valid one</li>
+      </ul>
+    </div>
+  `;
+
+  
+  document.body.appendChild(popup);
+}
+
+
+form.addEventListener('submit', function (e) {
+  e.preventDefault(); 
+
  
-    var randomIndex = Math.floor(Math.random() * quotes.length);
-    var randomQuote = quotes[randomIndex];
-  
+  const siteName = document.getElementById('siteName').value.trim();
+  const siteURL = document.getElementById('siteURL').value.trim();
 
-    quoteText.textContent = '"' + randomQuote.text + '"';
-    quoteAuthor.textContent = "-- " + randomQuote.author;
-  };
+ 
+  if (siteName.length < 3 || !isValidURL(siteURL)) {
+    showPopup();
+    return;
+  }
+
+
+  addBookmark(siteName, siteURL);
+
+
+  form.reset();
+});
+
+
+function addBookmark(name, url) {
+ 
+  const row = document.createElement('tr');
+
   
+  const indexCell = document.createElement('td');
+  indexCell.textContent = bookmarkList.rows.length + 1;
+
+  const nameCell = document.createElement('td');
+  nameCell.textContent = name;
+
+  const visitCell = document.createElement('td');
+  const visitButton = document.createElement('a');
+  visitButton.textContent = 'Visit';
+  visitButton.href = url;
+  visitButton.target = '_blank';
+  visitButton.style.color = 'blue';
+  visitCell.appendChild(visitButton);
+
+  const deleteCell = document.createElement('td');
+  const deleteButton = document.createElement('button');
+  deleteButton.textContent = 'Delete';
+  deleteButton.style.color = 'red';
+  deleteButton.addEventListener('click', function () {
+    row.remove(); 
+  });
+  deleteCell.appendChild(deleteButton);
+
+  
+  row.appendChild(indexCell);
+  row.appendChild(nameCell);
+  row.appendChild(visitCell);
+  row.appendChild(deleteCell);
+
+ 
+  bookmarkList.appendChild(row);
+}
+
+function isValidURL(url) {
+  try {
+    new URL(url); 
+    return true; 
+  } catch (e) {
+    return false; 
+  }
+}
