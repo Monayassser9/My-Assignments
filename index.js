@@ -1,94 +1,50 @@
-const form = document.getElementById('bookmarkForm');
-const bookmarkList = document.getElementById('bookmarkList');
-
-
-function showPopup() {
-  const popup = document.createElement('div');
-  popup.classList.add('popup');
+const users = [
+    { email: "user1@example.com", password: "password123" },
+    { email: "user2@example.com", password: "mypassword" }
+  ];
   
-  popup.innerHTML = `
-    <div class="popup-header">
-      <span>Site Name or Url is not valid</span>
-      <button onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
-    </div>
-    <div class="popup-body">
-      <p>Please follow the rules below:</p>
-      <ul>
-        <li>Site name must contain at least 3 characters</li>
-        <li>Site URL must be a valid one</li>
-      </ul>
-    </div>
-  `;
 
-  document.body.appendChild(popup);
-  popup.style.display = 'block';
-}
+  document.getElementById("loginForm")?.addEventListener("submit", function (e) {
+    e.preventDefault();
+  
+  
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+  
+   
+    const user = users.find((u) => u.email === email && u.password === password);
+  
+    let errorMessageContainer = document.querySelector(".error-message");
+    if (!errorMessageContainer) {
+      errorMessageContainer = document.createElement("p");
+      errorMessageContainer.className = "error-message text-danger mt-2";
+      const form = document.getElementById("loginForm");
+      form.appendChild(errorMessageContainer);
+    }
+  
+    if (user) {
 
+      const username = email.split("@")[0]; 
+      localStorage.setItem("username", username);
+      window.location.href = "welcome.html"; 
+    } else {
 
-form.addEventListener('submit', function(e) {
-  e.preventDefault();
-
-
-  const siteName = document.getElementById('siteName').value.trim();
-  const siteURL = document.getElementById('siteURL').value.trim();
-
-
-  if (siteName.length < 3 || !isValidURL(siteURL)) {
-    showPopup();
-    return;
-  }
-
-
-  addBookmark(siteName, siteURL);
-
-
-  form.reset();
-});
-
-
-function addBookmark(name, url) {
-  const row = document.createElement('tr');
-
-
-  const indexCell = document.createElement('td');
-  indexCell.textContent = bookmarkList.rows.length + 1;
-  row.appendChild(indexCell);
-
-  const nameCell = document.createElement('td');
-  nameCell.textContent = name;
-  row.appendChild(nameCell);
-
-
-  const visitCell = document.createElement('td');
-  const visitButton = document.createElement('a');
-  visitButton.textContent = 'Visit';
-  visitButton.href = url;
-  visitButton.target = '_blank';
-  visitButton.style.color = 'blue';
-  visitCell.appendChild(visitButton);
-  row.appendChild(visitCell);
-
-
-  const deleteCell = document.createElement('td');
-  const deleteButton = document.createElement('button');
-  deleteButton.textContent = 'Delete';
-  deleteButton.style.color = 'red';
-  deleteButton.addEventListener('click', function() {
-    row.remove();
+      errorMessageContainer.textContent = "Incorrect email or password";
+    }
   });
-  deleteCell.appendChild(deleteButton);
-  row.appendChild(deleteCell);
-
-  bookmarkList.appendChild(row);
-}
-
-
-function isValidURL(url) {
-    try {
-      new URL(url); 
-      return true;
-    } catch (e) {
-      return false; 
+  
+  if (window.location.pathname.includes("welcome.html")) {
+    const username = localStorage.getItem("username");
+    const usernameDisplay = document.getElementById("usernameDisplay");
+  
+    if (username) {
+      usernameDisplay.textContent = username;
+    } else {
+      usernameDisplay.textContent = "Guest";
     }
   }
   
+  document.getElementById("logoutBtn")?.addEventListener("click", function () {
+    localStorage.clear();
+    window.location.href = "index.html";
+  });
