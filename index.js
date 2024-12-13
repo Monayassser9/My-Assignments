@@ -1,50 +1,77 @@
-const users = [
-    { email: "user1@example.com", password: "password123" },
-    { email: "user2@example.com", password: "mypassword" }
-  ];
-  
+// Select elements from the DOM
+const locationInput = document.getElementById("location-input");
+const findBtn = document.getElementById("find-btn");
+const day1Temp = document.getElementById("day1-temp");
+const day1Desc = document.getElementById("day1-desc");
+const day2Temp = document.getElementById("day2-temp");
+const day2Desc = document.getElementById("day2-desc");
+const day3Temp = document.getElementById("day3-temp");
+const day3Desc = document.getElementById("day3-desc");
 
-  document.getElementById("loginForm")?.addEventListener("submit", function (e) {
-    e.preventDefault();
-  
-  
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-  
-   
-    const user = users.find((u) => u.email === email && u.password === password);
-  
-    let errorMessageContainer = document.querySelector(".error-message");
-    if (!errorMessageContainer) {
-      errorMessageContainer = document.createElement("p");
-      errorMessageContainer.className = "error-message text-danger mt-2";
-      const form = document.getElementById("loginForm");
-      form.appendChild(errorMessageContainer);
+// API details
+const API_KEY = 'API_WEATHER_API'; 
+const apiUrl = 'https://api.weatherapi.com/v1/forecast.json';
+
+
+async function fetchWeather(city) {
+    try {
+        const response = await fetch(`${apiUrl}?key=${API_KEY}&q=${city}&days=3`);
+        if (!response.ok) throw new Error('Failed to fetch weather data');
+        
+        const data = await response.json();
+        displayWeather(data);
+    } catch (error) {
+        console.error('Error fetching weather data:', error);
     }
-  
-    if (user) {
+}
 
-      const username = email.split("@")[0]; 
-      localStorage.setItem("username", username);
-      window.location.href = "welcome.html"; 
+
+function displayWeather(data) {
+    console.log(data);
+
+}
+
+document.querySelector('button').addEventListener('click', () => {
+    const city = document.querySelector('input').value;
+    if (city) fetchWeather(city);
+});
+
+fetch('https://api.weatherapi.com/v1/forecast.json?key=YOUR_API_KEY&q=aswan&days=3', {
+    method: 'GET',
+    mode: 'cors',
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Error:', error));
+
+const proxy = 'https://cors-anywhere.herokuapp.com/';
+const url = 'https://api.weatherapi.com/v1/forecast.json?key=YOUR_API_KEY&q=aswan&days=3';
+fetch(proxy + url)
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));
+
+
+// Function to update weather cards
+function updateWeatherCards(data) {
+    const forecastDays = data.forecast.forecastday;
+
+    day1Temp.textContent = `${forecastDays[0].day.avgtemp_c}°C`;
+    day1Desc.textContent = forecastDays[0].day.condition.text;
+
+    day2Temp.textContent = `${forecastDays[1].day.avgtemp_c}°C`;
+    day2Desc.textContent = forecastDays[1].day.condition.text;
+
+    day3Temp.textContent = `${forecastDays[2].day.avgtemp_c}°C`;
+    day3Desc.textContent = forecastDays[2].day.condition.text;
+}
+
+// Event listener for search button
+findBtn.addEventListener("click", () => {
+    const location = locationInput.value.trim();
+    if (location) {
+        fetchWeather(location);
     } else {
-
-      errorMessageContainer.textContent = "Incorrect email or password";
+        alert("Please enter a location.");
     }
-  });
-  
-  if (window.location.pathname.includes("welcome.html")) {
-    const username = localStorage.getItem("username");
-    const usernameDisplay = document.getElementById("usernameDisplay");
-  
-    if (username) {
-      usernameDisplay.textContent = username;
-    } else {
-      usernameDisplay.textContent = "Guest";
-    }
-  }
-  
-  document.getElementById("logoutBtn")?.addEventListener("click", function () {
-    localStorage.clear();
-    window.location.href = "index.html";
-  });
+});
